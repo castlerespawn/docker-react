@@ -3,9 +3,8 @@ FROM node:lts-alpine as builder
 
 WORKDIR /app
 
-# Copy package.json (and package-lock.json if present)
+# Copy package.json only (no package-lock.json needed)
 COPY package.json ./
-
 RUN npm install
 
 COPY . .
@@ -13,7 +12,6 @@ RUN npm run build
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
-
 COPY --from=builder /app/build /usr/share/nginx/html
 
 EXPOSE 80
