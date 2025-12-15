@@ -3,18 +3,18 @@ FROM node:lts-alpine as builder
 
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY package.json ./
+# Copy dependency files
+COPY package*.json ./
 RUN npm install
 
-# Copy all source files and build
+# Copy source code and build
 COPY . .
 RUN npm run build
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-# Copy built files from builder
+# Copy build files
 COPY --from=builder /app/build /usr/share/nginx/html
 
 # Expose port 80
