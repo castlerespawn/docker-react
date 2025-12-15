@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repository
+      # 1. Checkout repository
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -22,7 +22,7 @@ jobs:
       - name: Build test Docker image
         run: docker build -t mevanmanilka/docker-react -f Dockerfile.dev .
 
-      # 4. Run tests inside Docker container
+      # 4. Run tests
       - name: Run tests
         run: docker run -e CI=true mevanmanilka/docker-react npm test
 
