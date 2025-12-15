@@ -3,7 +3,9 @@ FROM node:lts-alpine as builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+# Copy package.json (and package-lock.json if present)
+COPY package.json ./
+
 RUN npm install
 
 COPY . .
@@ -14,7 +16,5 @@ FROM nginx:alpine
 
 COPY --from=builder /app/build /usr/share/nginx/html
 
-# Expose port 80 for EB
 EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]
