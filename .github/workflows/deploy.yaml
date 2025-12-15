@@ -1,4 +1,4 @@
-name: Deploy output
+name: Deploy outputs
 
 on:
   push:
