@@ -10,11 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout code
       - uses: actions/checkout@v2
 
-      - name: Generate deployment package
+      # Package files for deployment
+      - name: Package for Elastic Beanstalk
         run: zip -r deploy.zip . -x '*.git*'
 
+      # Deploy to Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v18
         env:
