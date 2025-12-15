@@ -1,10 +1,13 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "mevanmanilka/docker-react:latest",
+    "Name": "mevanmanilka/docker-react:latest",  # Replace with your image name
     "Update": "true"
   },
   "Ports": [
-    { "ContainerPort": "80" }
-  ]
+    {
+      "ContainerPort": "80"  # Exposes port 80 for the React app served by Nginx
+    }
+  ],
+  "Logging": "/var/log/nginx"
 }

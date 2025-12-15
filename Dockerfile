@@ -1,24 +1,24 @@
 # Stage 1: Build React app
 FROM node:lts-alpine as builder
 
-WORKDIR /app
+WORKDIR '/app'
 
-# Copy dependency files
-COPY package*.json ./
+# Copy package.json and install dependencies
+COPY package.json . 
 RUN npm install
 
-# Copy source code and build
-COPY . .
+# Copy all source files and build the React app
+COPY . . 
 RUN npm run build
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-# Copy build files
+# Copy the built React app to the Nginx server's public directory
 COPY --from=builder /app/build /usr/share/nginx/html
 
-# Expose port 80
+# Expose port 80 for Nginx
 EXPOSE 80
 
-# Start Nginx
+# Run Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
