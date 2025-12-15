@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout code
-      - name: Checkout repository
+      # 1. Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
       # 2. Docker login
@@ -22,11 +22,11 @@ jobs:
       - name: Build Docker image
         run: docker build -t mevanmanilka/docker-react:latest -f Dockerfile .
 
-      # 4. Push Docker image
+      # 4. Push Docker image to Docker Hub
       - name: Push Docker image
         run: docker push mevanmanilka/docker-react:latest
 
-      # 5. Prepare Dockerrun.aws.json for Elastic Beanstalk
+      # 5. Create Dockerrun.aws.json for Elastic Beanstalk
       - name: Create Dockerrun.aws.json
         run: |
           echo '{
