@@ -1,4 +1,4 @@
-name: Build and Deploy Frontend
+name: Deploy Frontend
 
 on:
   push:
@@ -10,44 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repository
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # 2. Log in to Docker Hub
-      - name: Docker login
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      # 3. Build Docker image for testing
-      - name: Build test Docker image
+      - name: Build Docker image
         run: docker build -t mevanmanilka/docker-react -f Dockerfile.dev .
 
-      # 4. Run tests
       - name: Run tests
         run: docker run -e CI=true mevanmanilka/docker-react npm test
 
-      # 5. Build production Docker image
-      - name: Build production Docker image
-        run: docker build -t mevanmanilka/docker-react -f Dockerfile .
-
-      # 6. Push Docker image to Docker Hub
-      - name: Push Docker image
-        run: docker push mevanmanilka/docker-react
-
-      # 7. Package deployment files for Elastic Beanstalk
-      - name: Package for Elastic Beanstalk
+      - name: Package deployment files
         run: zip -r deploy.zip Dockerfile .dockerignore
 
-      # 8. Deploy to Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v18
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: us-east-1
           application_name: frontend
           environment_name: Frontend-env
           existing_bucket_name: elasticbeanstalk-us-east-1-724084651959
-          region: us-east-1
           version_label: ${{ github.sha }}-${{ github.run_number }}
           deployment_package: deploy.zip
