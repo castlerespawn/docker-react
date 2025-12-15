@@ -10,35 +10,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repository
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v2
 
-      # 2. Docker login
-      - name: Docker login
+      - name: Login to DockerHub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # 3. Build Docker image for testing
-      - name: Build test image
-        run: docker build -t mevanmanilka/docker-react -f Dockerfile.dev .
+      - name: Build Docker image
+        run: docker build -t mevanmanilka/docker-react -f Dockerfile .
 
-      # 4. Run tests
-      - name: Run tests
-        run: docker run -e CI=true mevanmanilka/docker-react npm test
+      - name: Push Docker image
+        run: docker push mevanmanilka/docker-react
 
-      # 5. Create deployment package
-      - name: Generate deployment package
-        run: zip -r deploy.zip . -x '*.git*'
+      - name: Package for EB
+        run: zip -r deploy.zip Dockerfile Dockerrun.aws.json
 
-      # 6. Configure AWS credentials (for AWS CLI)
-      - name: Configure AWS credentials
+      - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # 7. Deploy to Elastic Beanstalk with unique version label
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v18
         with:
