@@ -1,4 +1,4 @@
-name: Deploy Frontend
+name: Build and Deploy Frontend
 
 on:
   push:
@@ -6,18 +6,39 @@ on:
       - master
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code
-      - uses: actions/checkout@v2
+      # 1. Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      # Package files for deployment
+      # 2. Log in to Docker Hub
+      - name: Docker login
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      # 3. Build Docker image for testing
+      - name: Build test Docker image
+        run: docker build -t mevanmanilka/docker-react -f Dockerfile.dev .
+
+      # 4. Run tests inside Docker container
+      - name: Run tests
+        run: docker run -e CI=true mevanmanilka/docker-react npm test
+
+      # 5. Build production Docker image
+      - name: Build production Docker image
+        run: docker build -t mevanmanilka/docker-react -f Dockerfile .
+
+      # 6. Push Docker image to Docker Hub
+      - name: Push Docker image
+        run: docker push mevanmanilka/docker-react
+
+      # 7. Package deployment files for Elastic Beanstalk
       - name: Package for Elastic Beanstalk
-        run: zip -r deploy.zip . -x '*.git*'
+        run: zip -r deploy.zip Dockerfile .dockerignore
 
-      # Deploy to Elastic Beanstalk
+      # 8. Deploy to Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v18
         env:
