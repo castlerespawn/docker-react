@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repository
+      # 1. Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -40,7 +40,7 @@ jobs:
             ]
           }' > Dockerrun.aws.json
 
-      # 6. Package for Elastic Beanstalk
+      # 6. Package Dockerrun.aws.json for deployment
       - name: Zip deployment package
         run: zip -r deploy.zip Dockerrun.aws.json
 
