@@ -3,7 +3,6 @@ FROM node:lts-alpine as builder
 
 WORKDIR /app
 
-# Copy package.json only (no package-lock.json needed)
 COPY package.json ./
 RUN npm install
 
